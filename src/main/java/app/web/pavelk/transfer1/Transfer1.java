@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 public class Transfer1 {
 
     public static final String BUILD = "build";
+    public static final String TARGET = "target";
     private static final String CONFIG_TEMP = "config_temp_4352453253";
     public static final String SEPARATOR = "\\";
     public static final String NODE_MODULES = "node_modules";
@@ -53,7 +54,7 @@ public class Transfer1 {
                 Files.move(Paths.get(f.getPathCurrent() + SEPARATOR + f.getName()), Paths.get(f.getPathOld()), StandardCopyOption.REPLACE_EXISTING);
                 Files.delete(Paths.get(f.getPathCurrent() + SEPARATOR + CONFIG_TEMP));
                 Files.delete(Paths.get(f.getPathCurrent()));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -68,7 +69,8 @@ public class Transfer1 {
         try (Stream<Path> walk = Files.walk(pathCode)) {
             walk.forEach(f -> {
                 if ((f.getFileName().toString().equals(NODE_MODULES) && !f.getParent().toString().contains(NODE_MODULES))
-                || (f.getFileName().toString().equals(BUILD) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(BUILD))) {
+                || (f.getFileName().toString().equals(BUILD) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(BUILD))
+                || (f.getFileName().toString().equals(TARGET) &&  !f.getParent().toString().contains(BUILD) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET))) {
                     Info info = new Info();
                     info.setId(UUID.randomUUID().toString());
                     info.setName(f.getFileName().toString());
