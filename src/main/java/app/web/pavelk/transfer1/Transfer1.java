@@ -14,17 +14,15 @@ import java.util.stream.Stream;
 
 public class Transfer1 {
 
-    public static final String BUILD = "build";
-    public static final String TARGET = "target";
+
     private static final String CONFIG_TEMP = "config_temp_4352453253";
     public static final String SEPARATOR = "\\";
-    public static final String NODE_MODULES = "node_modules";
 
     public static void main(String[] args) throws IOException {
         Path pathCode = Paths.get("C:\\code");
         Path pathTemp = Paths.get("C:\\temp");
         toTemp(pathCode, pathTemp);
-        fromTemp(pathTemp);
+//        fromTemp(pathTemp);
     }
 
     private static void fromTemp(Path pathTemp) throws IOException {
@@ -51,7 +49,8 @@ public class Transfer1 {
         }
         listInfos.forEach(f -> {
             try {
-                Files.move(Paths.get(f.getPathCurrent() + SEPARATOR + f.getName()), Paths.get(f.getPathOld()), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(Paths.get(f.getPathCurrent() + SEPARATOR + f.getName()), Paths.get(f.getPathOld()),
+                        StandardCopyOption.REPLACE_EXISTING);
                 Files.delete(Paths.get(f.getPathCurrent() + SEPARATOR + CONFIG_TEMP));
                 Files.delete(Paths.get(f.getPathCurrent()));
             } catch (Exception e) {
@@ -68,9 +67,8 @@ public class Transfer1 {
         List<Info> listInfos = new ArrayList<>();
         try (Stream<Path> walk = Files.walk(pathCode)) {
             walk.forEach(f -> {
-                if ((f.getFileName().toString().equals(NODE_MODULES) && !f.getParent().toString().contains(NODE_MODULES))
-                || (f.getFileName().toString().equals(BUILD) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(BUILD))
-                || (f.getFileName().toString().equals(TARGET) &&  !f.getParent().toString().contains(BUILD) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET))) {
+                if (isStatus(f)) {
+
                     Info info = new Info();
                     info.setId(UUID.randomUUID().toString());
                     info.setName(f.getFileName().toString());
@@ -84,7 +82,8 @@ public class Transfer1 {
             try {
                 Path pathCurrent = Paths.get(pathTemp + SEPARATOR + f.getId());
                 Files.createDirectory(pathCurrent);
-                Files.move(Paths.get(f.getPathOld()), Paths.get(pathCurrent + SEPARATOR + f.getName()), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(Paths.get(f.getPathOld()), Paths.get(pathCurrent + SEPARATOR + f.getName()),
+                        StandardCopyOption.REPLACE_EXISTING);
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("id", f.getId());
                 jsonObject.put("name", f.getName());
@@ -95,5 +94,30 @@ public class Transfer1 {
                 e.printStackTrace();
             }
         });
+    }
+
+
+    public static final String BUILD = "build";
+    public static final String TARGET = "target";
+    public static final String NODE_MODULES = "node_modules";
+    public static final String G = ".gradle";
+    public static final String I = ".idea";
+    public static final String A = ".angular";
+    public static final String D = "dist";
+    public static final String F = ".firebase";
+
+    private static boolean isStatus(Path f) {
+        return (f.getFileName().toString().equals(NODE_MODULES) && !f.getParent().toString().contains(NODE_MODULES))
+               || (f.getFileName().toString().equals(BUILD) && !f.getParent().toString().contains(NODE_MODULES)
+                   && !f.getParent().toString().contains(BUILD) && !f.getParent().toString().contains(TARGET))
+               || (f.getFileName().toString().equals(TARGET) && !f.getParent().toString().contains(BUILD)
+                   && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET))
+               || (f.getFileName().toString().equals(G) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET) && !f.getParent().toString().contains(BUILD))
+               || (f.getFileName().toString().equals(I) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET) && !f.getParent().toString().contains(BUILD))
+               || (f.getFileName().toString().equals(A) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET) && !f.getParent().toString().contains(BUILD))
+               || (f.getFileName().toString().equals(D) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET) && !f.getParent().toString().contains(BUILD))
+               || (f.getFileName().toString().equals(F) && !f.getParent().toString().contains(NODE_MODULES) && !f.getParent().toString().contains(TARGET) && !f.getParent().toString().contains(BUILD))
+
+                ;
     }
 }
